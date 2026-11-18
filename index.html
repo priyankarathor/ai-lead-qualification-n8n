@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadFlow - Talk to our team</title>
+<style>
+ body{font-family:system-ui,sans-serif;background:#f6f7fb;display:flex;justify-content:center;padding:32px}
+ form{background:#fff;padding:28px;border-radius:12px;max-width:420px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+ input,select,textarea,button{width:100%;padding:10px;margin:6px 0 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:15px;box-sizing:border-box}
+ button{background:#ea4b71;color:#fff;border:0;cursor:pointer}
+ .hp{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<form id="f">
+ <h2>Talk to our team</h2>
+ <input name="name" placeholder="Your name" required>
+ <input name="email" type="email" placeholder="Work email" required>
+ <input name="company" placeholder="Company" required>
+ <select name="budget">
+  <option>Under $1k</option><option>$1k-$5k</option><option>$5k+</option>
+ </select>
+ <select name="timeline">
+  <option>This month</option><option>1-3 months</option><option>Just exploring</option>
+ </select>
+ <textarea name="message" rows="4" placeholder="What do you need?"></textarea>
+ <input class="hp" name="website_hp" tabindex="-1" autocomplete="off">
+ <button type="submit">Send</button>
+ <p id="msg"></p>
+</form>
+<script>
+const WEBHOOK = "http://localhost:5678/webhook/lead";
+document.getElementById("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById("msg");
+  msg.textContent = "Sending...";
+  try {
+    const body = new URLSearchParams(new FormData(e.target));
+    const res = await fetch(WEBHOOK, { method: "POST", body });
+    msg.textContent = res.ok ? "Thanks! We will contact you shortly." : "Something went wrong.";
+    if (res.ok) e.target.reset();
+  } catch (err) { msg.textContent = "Network error."; }
+});
+</script>
+</body>
+</html>
